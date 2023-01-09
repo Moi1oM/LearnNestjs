@@ -1,5 +1,5 @@
-import { JwtAuthGuard } from './../auth/jwt/jwt.guard';
-import { ReadOnlyCatDto } from './dto/cat.dto';
+import { JwtAuthGuard } from '../../auth/jwt/jwt.guard';
+import { ReadOnlyCatDto } from '../dto/cat.dto';
 import {
   Body,
   Delete,
@@ -7,6 +7,8 @@ import {
   ParseIntPipe,
   Patch,
   Req,
+  UploadedFile,
+  UploadedFiles,
   UseFilters,
   UseGuards,
   UseInterceptors,
@@ -15,12 +17,15 @@ import { Controller, Get, Post, Put } from '@nestjs/common';
 import { HttpExceptionFilter } from 'src/common/exceptions/http-exception.filter';
 import { SuccessInterceptor } from 'src/common/interceptors/success.interceptor';
 import { PositiveIntPipe } from 'src/common/pipes/positiveInt.pipe';
-import { CatsService } from './cats.service';
-import { CatRequestDto } from './dto/cats.request.dto';
+import { CatsService } from '../services/cats.service';
+import { CatRequestDto } from '../dto/cats.request.dto';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { AuthService } from 'src/auth/auth.service';
 import { LoginRequestDto } from 'src/auth/dto/login.request.dto';
 import { CurrentUser } from 'src/common/decorators/user.decorator';
+import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
+import { multerOptions } from 'src/common/utils/multer.options';
+import { Cat } from '../cats.schema';
 
 @Controller('cats')
 @UseInterceptors(SuccessInterceptor)
@@ -66,8 +71,21 @@ export class CatsController {
   }
 
   @ApiOperation({ summary: '이미지 업로드' })
-  @Post('upload/cats')
-  uploadCatImg() {
-    return 'uploadImg';
+  @UseInterceptors(FilesInterceptor('image', 10, multerOptions('cats')))
+  @UseGuards(JwtAuthGuard)
+  @Post('upload')
+  uploadCatImg(
+    @UploadedFiles() files: Array<Express.Multer.File>,
+    @CurrentUser() cat: Cat,
+  ) {
+    console.log(files);
+    //return { Image: `http://localhost:8000/media/cats/${files[0].filename}` };
+    return this.catsService.uploadImg(cat, files);
+  }
+
+  @ApiOperation({ summary: '모든 고양이 가져오기' })
+  @Get('all')
+  getAllCat() {
+    return this.catsService.getAllCat();
   }
 }
