@@ -2,6 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
 import { Document, SchemaOptions } from 'mongoose';
+import { Comments } from 'src/comments/comments.schema';
 
 const options: SchemaOptions = {
   timestamps: true,
@@ -44,7 +45,10 @@ export class Cat extends Document {
     email: string;
     name: string;
     imgUrl: string;
+    comments: Comments[];
   };
+
+  readonly comments: Comments[];
 }
 
 export const _CatSchema = SchemaFactory.createForClass(Cat);
@@ -55,6 +59,7 @@ _CatSchema.virtual('readOnlyData').get(function (this: Cat) {
     email: this.email,
     name: this.name,
     imgUrl: this.imgUrl,
+    comments: this.comments,
   };
 });
 
