@@ -47,9 +47,9 @@ export class Cat extends Document {
   };
 }
 
-export const CatSchema = SchemaFactory.createForClass(Cat);
+export const _CatSchema = SchemaFactory.createForClass(Cat);
 
-CatSchema.virtual('readOnlyData').get(function (this: Cat) {
+_CatSchema.virtual('readOnlyData').get(function (this: Cat) {
   return {
     id: this.id,
     email: this.email,
@@ -57,3 +57,13 @@ CatSchema.virtual('readOnlyData').get(function (this: Cat) {
     imgUrl: this.imgUrl,
   };
 });
+
+_CatSchema.virtual('comments', {
+  ref: 'comments',
+  localField: '_id',
+  foreignField: 'info',
+});
+_CatSchema.set('toObject', { virtuals: true });
+_CatSchema.set('toJSON', { virtuals: true });
+
+export const CatSchema = _CatSchema;
