@@ -28,4 +28,8 @@ export class CatsService {
 
     return cat.readOnlyData;
   }
+
+  logOut() {
+    return '프론트에서 jwt제거하세요..ㅎㅎ';
+  }
 }
