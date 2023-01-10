@@ -7,6 +7,7 @@ import { CatsRepository } from './cats.repository';
 import { AuthModule } from 'src/auth/auth.module';
 import { MulterModule } from '@nestjs/platform-express';
 import { Comments, CommentsSchema } from 'src/comments/comments.schema';
+import { AwsService } from 'src/aws.service';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { Comments, CommentsSchema } from 'src/comments/comments.schema';
       { name: Cat.name, schema: CatSchema },
     ]),
     forwardRef(() => AuthModule),
+    //forwardRef(() => AwsService),
   ],
   controllers: [CatsController],
   providers: [CatsService, CatsRepository],

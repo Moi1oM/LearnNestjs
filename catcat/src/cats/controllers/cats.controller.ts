@@ -1,3 +1,4 @@
+import { AwsService } from './../../aws.service';
 import { JwtAuthGuard } from '../../auth/jwt/jwt.guard';
 import { ReadOnlyCatDto } from '../dto/cat.dto';
 import {
@@ -33,7 +34,7 @@ import { Cat } from '../cats.schema';
 export class CatsController {
   constructor(
     private readonly catsService: CatsService,
-    private readonly authService: AuthService,
+    private readonly authService: AuthService, //    private readonly awsService: AwsService,
   ) {}
 
   @ApiOperation({ summary: '하나 가져오기' })
@@ -74,12 +75,13 @@ export class CatsController {
   @UseInterceptors(FilesInterceptor('image', 10, multerOptions('cats')))
   @UseGuards(JwtAuthGuard)
   @Post('upload')
-  uploadCatImg(
+  async uploadCatImg(
     @UploadedFiles() files: Array<Express.Multer.File>,
     @CurrentUser() cat: Cat,
   ) {
     console.log(files);
     //return { Image: `http://localhost:8000/media/cats/${files[0].filename}` };
+    //    return await this.awsService.uploadFileToS3('cats', files[0]);
     return this.catsService.uploadImg(cat, files);
   }
 
